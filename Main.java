@@ -7,16 +7,15 @@ import java.io.*;
 public class Main {
 
     static Scanner scanner = new Scanner(System.in);
-    static ArrayList<String> filesList = new ArrayList<String>();
-    static ArrayList<String> code1 = new ArrayList<String>();
-    static ArrayList<String> code2 = new ArrayList<String>();
-    static ArrayList<String> code3 = new ArrayList<String>();
-    static ArrayList<String> code4 = new ArrayList<String>();
-    static ArrayList<String> code5 = new ArrayList<String>();
+    static ArrayList<String> filesList = new ArrayList<>();
+    private static ArrayList<String>[] codes = new ArrayList[5];
     static int filesCount = 0;
     static String resultFileName = "";
 
     public static void main(String[] args) {
+        for (int i = 0; i < codes.length; i++) {
+            codes[i] = new ArrayList<>();
+        }
         clearScreen();
 
         while (true) {
@@ -28,28 +27,23 @@ public class Main {
                     if (!input.equals("0")) {
                         if (input.endsWith(".scss")) {
                             filesList.add(input);
-                            filesCount++;
                         }
                         else if (input.endsWith(".")) {
                             filesList.add(input + "scss");
-                            filesCount++;
                         }
                         else if (input.endsWith(".s")) {
                             filesList.add(input + "css");
-                            filesCount++;
                         }
                         else if (input.endsWith(".sc")) {
                             filesList.add(input + "ss");
-                            filesCount++;
                         }
                         else if (input.endsWith(".scs")) {
                             filesList.add(input + "s");
-                            filesCount++;
                         }
                         else {
                             filesList.add(input + ".scss");
-                            filesCount++;
                         }
+                        filesCount++;
                     }
                     else {
                         break;
@@ -59,9 +53,6 @@ public class Main {
                     System.out.println("Достигнут лимит файлов. Максимум - 5");
                     break;
                 }
-            }
-            else {
-                continue;
             }
         }
 
@@ -95,16 +86,13 @@ public class Main {
                     break;
                 }
             }
-            else {
-                continue;
-            }
         }
 
         for (int i = 0; i < filesList.size(); i++) {
             readScssFile(filesList.get(i), i + 1);
         }
 
-        Boolean build = buildScssFile();
+        boolean build = buildScssFile();
 
         if (build) {
             System.out.println("Sass Файл успешно собран");
@@ -112,10 +100,10 @@ public class Main {
         else {
             System.out.println("Во время сборки, что-то пошло не так");
         }
-    } 
+    }
 
-    public static Boolean readScssFile(String fileName, int fileIndex) {
-        Boolean status = false;
+    public static boolean readScssFile(String fileName, int fileIndex) {
+        boolean status;
 
         try {
             File file = new File(fileName);
@@ -123,45 +111,14 @@ public class Main {
             BufferedReader reader = new BufferedReader(fr);
             String line = reader.readLine();
 
-            if (fileIndex == 1) {
-                while (line != null) {
-                    code1.add(line);
-                    line = reader.readLine();
-                }
-            }
-            else if (fileIndex == 2) {
-                while (line != null) {
-                    code2.add(line);
-                    line = reader.readLine();
-                }
-            }
-            else if (fileIndex == 3) {
-                while (line != null) {
-                    code3.add(line);
-                    line = reader.readLine();
-                }
-            }
-            else if (fileIndex == 4) {
-                while (line != null) {
-                    code4.add(line);
-                    line = reader.readLine();
-                }
-            }
-            else if (fileIndex == 5) {
-                while (line != null) {
-                    code5.add(line);
-                    line = reader.readLine();
-                }
+            while (line != null) {
+                codes[fileIndex - 1].add(line);
+                line = reader.readLine();
             }
 
             status = true;
             reader.close();
-        } 
-        catch (FileNotFoundException e) {
-            e.printStackTrace();
-            status = false;
-        } 
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             status = false;
         }
@@ -170,97 +127,15 @@ public class Main {
     }
 
     public static Boolean buildScssFile() {
-        Boolean status = false;
+        boolean status;
 
         try(FileWriter writer = new FileWriter(resultFileName, false)) {
-            if (filesCount == 1) {
-                for (int i = 0; i < code1.size(); i++) {
-                    writer.write(code1.get(i) + "\n");
-                }
 
+            for (int file = 0; file < filesCount; file++) {
+                for (int i = 0; i < codes[file].size(); i++) {
+                    writer.write(codes[file].get(i) + "\n");
+                }
                 writer.flush();
-            }
-            else if (filesCount == 2) {
-                for (int i = 0; i < code1.size(); i++) {
-                    writer.write(code1.get(i) + "\n");
-                }
-
-                writer.write("\n");
-
-                for (int i = 0; i < code2.size(); i++) {
-                    writer.write(code2.get(i) + "\n");
-                }
-
-                writer.flush();
-            }
-            else if (filesCount == 3) {
-                for (int i = 0; i < code1.size(); i++) {
-                    writer.write(code1.get(i) + "\n");
-                }
-
-                writer.write("\n");
-
-                for (int i = 0; i < code2.size(); i++) {
-                    writer.write(code2.get(i) + "\n");
-                }
-
-                writer.write("\n");
-
-                for (int i = 0; i < code3.size(); i++) {
-                    writer.write(code3.get(i) + "\n");
-                }
-            }
-            else if (filesCount == 4) {
-                for (int i = 0; i < code1.size(); i++) {
-                    writer.write(code1.get(i) + "\n");
-                }
-
-                writer.write("\n");
-
-                for (int i = 0; i < code2.size(); i++) {
-                    writer.write(code2.get(i) + "\n");
-                }
-
-                writer.write("\n");
-
-                for (int i = 0; i < code3.size(); i++) {
-                    writer.write(code3.get(i) + "\n");
-                }
-
-                writer.write("\n");
-
-                for (int i = 0; i < code4.size(); i++) {
-                    writer.write(code4.get(i) + "\n");
-                }
-            }
-            else if (filesCount == 5) {
-                for (int i = 0; i < code1.size(); i++) {
-                    writer.write(code1.get(i) + "\n");
-                }
-
-                writer.write("\n");
-
-                for (int i = 0; i < code2.size(); i++) {
-                    writer.write(code2.get(i) + "\n");
-                }
-
-                writer.write("\n");
-
-                for (int i = 0; i < code3.size(); i++) {
-                    writer.write(code3.get(i) + "\n");
-                }
-
-                writer.write("\n");
-
-                for (int i = 0; i < code4.size(); i++) {
-                    writer.write(code4.get(i) + "\n");
-                }
-
-                writer.write("\n");
-
-                for (int i = 0; i < code5.size(); i++) {
-                    writer.write(code5.get(i) + "\n");
-                }
             }
 
             status = true;
@@ -271,7 +146,7 @@ public class Main {
         }
 
         return status;
-    } 
+    }
 
     public static void clearScreen() {
         try {
